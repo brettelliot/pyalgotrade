@@ -11,10 +11,11 @@ class MyStrategy(strategy.BacktestingStrategy):
         bar = bars[self.__instrument]
         self.info(bar.getClose())
 
+
 # Load the yahoo feed from the CSV file
 feed = yahoofeed.Feed()
-feed.addBarsFromCSV("orcl", "orcl-2000.csv")
+feed.addBarsFromCSV("aapl", "./data/aapl-2011-yahoofinance.csv")
 
 # Evaluate the strategy with the feed's bars.
-myStrategy = MyStrategy(feed, "orcl")
+myStrategy = MyStrategy(feed, "aapl")
 myStrategy.run()
