@@ -1,4 +1,4 @@
-from pyalgotrade import eventstudy
+from pyalgotrade import eventprofiler
 from pyalgotrade.technical import stats
 from pyalgotrade.technical import roc
 from pyalgotrade.technical import ma
@@ -8,7 +8,7 @@ from pyalgotrade.tools import yahoofinance
 # 'Algorithmic Trading: Winning Strategies and Their Rationale'
 
 
-class BuyOnGap(eventstudy.Predicate):
+class BuyOnGap(eventprofiler.Predicate):
     def __init__(self, feed):
         super(BuyOnGap, self).__init__()
 
@@ -54,13 +54,13 @@ def main(plot):
     feed = yahoofinance.build_feed(instruments, 2008, 2009, "./data")
 
     predicate = BuyOnGap(feed)
-    event_study = eventstudy.EventStudy(predicate, 5, 5)
-    event_study.run(feed, True)
+    eventProfiler = eventprofiler.Profiler(predicate, 5, 5)
+    eventProfiler.run(feed, True)
 
-    results = event_study.getResults()
+    results = eventProfiler.getResults()
     print("%d events found" % (results.getEventCount()))
     if plot:
-        eventstudy.plot(results)
+        eventprofiler.plot(results)
 
 if __name__ == "__main__":
     main(True)
