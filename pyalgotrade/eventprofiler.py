@@ -251,3 +251,13 @@ def plot(profilerResults):
 
     build_plot(profilerResults)
     plt.show()
+
+def plot_to_file(profilerResults, filename):
+    """Plots the result of the analysis.
+
+    :param profilerResults: The result of the analysis
+    :type profilerResults: :class:`Results`.
+    """
+
+    build_plot(profilerResults)
+    plt.savefig(filename, format='pdf')

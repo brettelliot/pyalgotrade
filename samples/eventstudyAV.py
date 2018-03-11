@@ -32,16 +32,20 @@ class EventList:
         return self.__datetimes
 
 class BuyOnEvent(eventstudy.Predicate):
-    def __init__(self, feed):
+    def __init__(self, feed, market):
         super(BuyOnEvent, self).__init__()
         event_ist = EventList()
         self.__dates = event_ist.get_datetime_list()
+        self.__market = market
 
     def eventOccurred(self, instrument, bards):
         ret = False
 
+        if instrument == self.__market:
+            return False
+
         if bards[-1].getDateTime() in self.__dates:
-            #print("Got one: {0}".format(bards[-1].getDateTime()))
+            print("Got one: {0}".format(bards[-1].getDateTime()))
             ret = True
         return ret
 
@@ -58,15 +62,17 @@ def main(plot):
     feed.addBarsFromCSV("AAPL", "./data/daily_adjusted_AAPL.csv")
     feed.addBarsFromCSV("MSFT", "./data/daily_adjusted_MSFT.csv")
     feed.addBarsFromCSV("SPY", "./data/daily_adjusted_SPY.csv")
+    market = "SPY"
 
-    predicate = BuyOnEvent(feed)
-    event_study = eventstudy.EventStudy(predicate, 5, 5)
-    event_study.run(feed, True)
+    predicate = BuyOnEvent(feed, market)
+    event_study = eventstudy.EventStudy(predicate, 20, 20)
+    event_study.run(feed, False)
 
     results = event_study.getResults()
+    print(results)
     print("%d events found" % (results.getEventCount()))
     if plot:
-        eventstudy.plot(results)
+        eventstudy.plot_to_file(results, 'eventstudyAV.pdf')
 
 if __name__ == "__main__":
     main(True)

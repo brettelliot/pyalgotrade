@@ -43,10 +43,12 @@ class Results(object):
                     self.__eventCount += 1
                     # Compute cumulative returns: (1 + R1)*(1 + R2)*...*(1 + Rn)
                     values = np.cumprod(event.getValues() + 1)
+
                     # Normalize everything to the time of the event
                     values = values / values[event.getLookBack()]
                     for t in range(event.getLookBack()*-1, event.getLookForward()+1):
                         self.setValue(t, values[t+event.getLookBack()])
+
 
     def __mapPos(self, t):
         assert(t >= -1*self.__lookBack and t <= self.__lookForward)
@@ -228,14 +230,16 @@ def build_plot(studyResults):
         y.append(values.mean())
         std.append(values.std())
 
+    #print(values)
+
     # Plot
     plt.clf()
     plt.plot(x, y, color='#0000FF')
     eventT = studyResults.getLookBack()
-    # stdBegin = eventT + 1
-    # plt.errorbar(x[stdBegin:], y[stdBegin:], std[stdBegin:], alpha=0, ecolor='#AAAAFF')
+    #stdBegin = eventT + 1
+    #plt.errorbar(x[stdBegin:], y[stdBegin:], std[stdBegin:], alpha=0, ecolor='#AAAAFF')
     plt.errorbar(x[eventT+1:], y[eventT+1:], std[eventT+1:], alpha=0, ecolor='#AAAAFF')
-    # plt.errorbar(x, y, std, alpha=0, ecolor='#AAAAFF')
+    #plt.errorbar(x, y, std, alpha=0, ecolor='#AAAAFF')
     plt.axhline(y=y[eventT], xmin=-1*studyResults.getLookBack(), xmax=studyResults.getLookForward(), color='#000000')
     plt.xlim(studyResults.getLookBack()*-1-0.5, studyResults.getLookForward()+0.5)
     plt.xlabel('Time')
@@ -251,3 +255,13 @@ def plot(studyResults):
 
     build_plot(studyResults)
     plt.show()
+
+def plot_to_file(profilerResults, filename):
+    """Plots the result of the analysis.
+
+    :param profilerResults: The result of the analysis
+    :type profilerResults: :class:`Results`.
+    """
+
+    build_plot(profilerResults)
+    plt.savefig(filename, format='pdf')
