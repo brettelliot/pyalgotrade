@@ -1053,6 +1053,25 @@ class MarketOrderTestCase(BaseTestCase):
         self.assertTrue(brk.getShares(BaseTestCase.TestInstrument) == 9)
         self.assertTrue(brk.getCash() == sharePrice - commission)
 
+
+    def testInteractiveBrokersCommission_1(self):
+        ibCommission = backtesting.InteractiveBrokersCommission()
+
+        # test perShare commission
+        # 1,000 Shares @ USD 25 Share Price = USD 5.00
+        commission = ibCommission.calculate(None, 25.00, 1000)
+        self.assertEqual(commission, 5.00)
+
+        # test minPerOrder commission
+        # 100 Shares @ USD 25 Share Price = USD 1.00
+        commission = ibCommission.calculate(None, 25.00, 100)
+        self.assertEqual(commission, 1.00)
+
+        # test maxPerOrderPct commission
+        # 1,000 Shares @ USD 0.25 Share Price = USD 1.25
+        commission = ibCommission.calculate(None, .25, 1000)
+        self.assertEqual(commission, 1.25)
+
     def testCancel(self):
         barFeed = self.buildBarFeed(BaseTestCase.TestInstrument, bar.Frequency.MINUTE)
         brk = self.buildBroker(100, barFeed)

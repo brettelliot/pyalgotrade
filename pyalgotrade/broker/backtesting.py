@@ -90,6 +90,35 @@ class TradePercentage(Commission):
     def calculate(self, order, price, quantity):
         return price * quantity * self.__percentage
 
+class InteractiveBrokersCommission(Commission):
+    """A :class:`Commission` class that charges the way interactive brokers does.
+
+    :param perShare: The amount charged per share. Ex: 0.005 means $0.005
+    :type perShare: float.
+    :param minPerOrder: The minimum amount that will be charged. Ex: 1.0 means $1.00
+    :type minPerOrder: float.
+    :param maxPerOrderPct: The maximum that can be charged as a percent of the trade value. Ex: 0.005 means 0.5%
+    :type maxPerOrderPct: float.
+    """
+
+    def __init__(self, perShare=0.005, minPerOrder=1.0, maxPerOrderPct=0.005):
+        super(InteractiveBrokersCommission, self).__init__()
+        assert (maxPerOrderPct < 1)
+        self.__perShare = perShare
+        self.__minPerOrder = minPerOrder
+        self.__maxPerOrderPct = maxPerOrderPct
+
+    def calculate(self, order, price, quantity):
+        commission = quantity * self.__perShare
+        orderPrice = price * quantity
+        commissionAsPercentageOfOrderPrice = commission / orderPrice
+
+        if commission < self.__minPerOrder:
+            commission = self.__minPerOrder
+        elif commissionAsPercentageOfOrderPrice > self.__maxPerOrderPct:
+            commission = orderPrice * self.__maxPerOrderPct
+        return commission
+
 
 ######################################################################
 # Orders
